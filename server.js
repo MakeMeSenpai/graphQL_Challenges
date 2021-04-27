@@ -32,12 +32,15 @@ const schema = buildSchema(`
 
   type Mutation {
     addPet(name: String!, species: String!): Pet!
+    updatePet(id: Int!, name: String, species: String): Pet
+    removePet(id: Int!): Pet
   }
 
   type Query {
     getWeather(zip: Int!, units: Units): Weather!
   }`)
 
+const petList = []
 const root = {
   getWeather: async ({ zip, units }) => {
 		const apikey = process.env.API_KEY
@@ -67,10 +70,35 @@ const root = {
 	},
   addPet: ({ name, species }) => {
 		const pet = { name, species }
-    const petList = []
 		petList.push(pet)
 		return pet
-	}
+	},
+  updatePet: ({ id, name, species }) => {
+		const pet = petList[id]  // is there anything at this id? 
+		if (pet === undefined) { // Id not return null
+			return null 
+		}
+    // if name or species was not included use the original
+		pet.name = name || pet.name 
+		pet.species = species || pet.species
+		return pet
+	},
+  readPet: ({ id }) => {
+    // checks if pet exists at index/id
+    if (petList[id] === undefined) {
+      return null
+    }
+    // returns deleted item
+    return petList[id]
+  },
+  removePet: ({ id }) => {
+    // checks if pet exists at index/id
+    if (petList[id] === undefined) {
+      return null
+    }
+    // returns deleted item
+    return petList.splice(id, 1)
+  }
 }
 
 // Create an express app
