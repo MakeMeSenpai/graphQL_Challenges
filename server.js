@@ -36,12 +36,11 @@ const schema = buildSchema(`
 
   type Query {
     getWeather(zip: Int!, units: Units): Weather!
-    mutation: Mutation!
   }`)
 
 const root = {
   getWeather: async ({ zip, units }) => {
-		const apikey = "c9f2384035495137f5ce5715af3bb404" // process.env.API_KEY
+		const apikey = process.env.API_KEY
 		const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zip}&appid=${apikey}&units=${units}`
 		const res = await fetch(url)
 		const json = await res.json()
@@ -68,6 +67,7 @@ const root = {
 	},
   addPet: ({ name, species }) => {
 		const pet = { name, species }
+    const petList = []
 		petList.push(pet)
 		return pet
 	}
